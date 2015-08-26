@@ -157,12 +157,18 @@ class Instagram {
   /**
    * Get user recent media
    *
-   * @param integer [optional] $id        Instagram user ID
-   * @param integer [optional] $limit     Limit of returned results
+   * @param integer [optional] $id                  Instagram user ID
+   * @param integer [optional] $limit               Limit of returned results
+   * @param integer [optional] $min_timestamp       "since" timestamp to use conditional fetching
    * @return mixed
    */
-  public function getUserMedia($id = 'self', $limit = 0) {
-    return $this->_makeCall('users/' . $id . '/media/recent', strlen($this->getAccessToken()), array('count' => $limit));
+  public function getUserMedia($id = 'self', $limit = 0, $min_timestamp = null) {
+    if (isset($min_timestamp)) {
+      return $this->_makeCall('users/' . $id . '/media/recent', ($id === 'self'),
+          ['count' => $limit, 'min_timestamp' => $min_timestamp]);
+    }
+
+    return $this->_makeCall('users/' . $id . '/media/recent', ($id === 'self'), ['count' => $limit]);
   }
 
   /**
@@ -594,7 +600,7 @@ class Instagram {
   /**
    * Access Token Getter
    *
-   * @return string
+   * @return stringg
    */
   public function getAccessToken() {
     return $this->_accesstoken;
